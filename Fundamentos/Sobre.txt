@@ -1,0 +1,2 @@
+Vamos criar nosso projeto com vite
+ - `npm init vite@latest`
