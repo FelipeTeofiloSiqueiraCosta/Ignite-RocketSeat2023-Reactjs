@@ -22,7 +22,7 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
 
   ${(props) => {
     return css`
-      background-color: ${props.theme.button[props.variant]};
+      background-color: ${props.theme};
     `;
   }}; //usando propriedades no styled-components
   /* ${(props) => {

@@ -20,4 +20,17 @@
       - interface
       - type
       - typeof e etc
-  -
+- #### Estilos globais com styled components
+
+  - ./src/example/styles/global.ts
+    - Importe ele la no app.tsx
+
+- #### Configurando o ESlint
+  - ESlint = Ecma script linting
+    - linting é uma maneira de validar se você está seguindo padrões de programar estipulado pelo seu time que desenvolverá o projeto
+      - ex: ";" no final das linhas e etc
+    - npm i eslint -D
+    - npx eslint --init
+    - npx eslint src --ext .ts,.tsx (lint vai verificar os arquivos dentro de src que terminam com .ts e .tsx)
+    - npx eslint src --ext .ts,.tsx --fix (caso ele encontrar algo fora do padrão ele ja concerta)
+    -
