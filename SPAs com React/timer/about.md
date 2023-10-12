@@ -40,4 +40,7 @@
 
 - Biblioteca em react utilizada para o roteamento entre páginas
 - npm react-router-dom
+
+### Layout de rotas
+
 -
