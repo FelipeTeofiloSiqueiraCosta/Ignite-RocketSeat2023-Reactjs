@@ -1,10 +1,12 @@
 import { Pause, Play } from "phosphor-react";
-import { FormContainer, FormSubmiteButtonActive, FormSubmiteButtonPause, HomeContainer, TimerContainer } from "./styles";
+import { FormContainer, FormSubmiteButtonActive, FormSubmiteButtonPause, HomeContainer } from "./styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {  z } from "zod";
 import {  useEffect, useState } from "react";
 import {  differenceInSeconds } from "date-fns";
+import { Timer } from "./Timer";
+import { NewCycleForm } from "./NewCycleForm";
 
 const zodSchema = z
   .object({
@@ -50,7 +52,7 @@ export function Home() {
     const id = String(new Date().getTime())
     const createdCycle: Cycle = {
       id,
-      duration: .10,
+      duration: fields.duration,
       task: fields.name,
       startDate: new Date()
     }
@@ -122,44 +124,9 @@ export function Home() {
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <FormContainer>
-          <label htmlFor="project-name">Vou trabalhar em </label>
-          <input
-            type="text"
-            id="project-name"
-            placeholder="Dê um nome para seu projeto"
-            list="tasks-sugestions"
-            disabled={!!activeCycle}
-            {...register("name")}
-          />
+        <NewCycleForm/>
 
-          <datalist id="tasks-sugestions">
-            <option value="Porjeto 1">Porjeto 1</option>
-            <option value="Porjeto 2">Porjeto 2</option>
-            <option value="Porjeto 3">Porjeto 3</option>
-            <option value="Porjeto 4">Porjeto 4</option>
-          </datalist>
-          <label htmlFor="duration">durante </label>
-          <input
-            type="number"
-            id="duration"
-            placeholder="- 00 +"
-            step={5}
-            min={5}
-            max={60}
-            disabled={!!activeCycle}
-            {...register("duration", { valueAsNumber: true })}
-          />
-          <span>minutos</span>
-        </FormContainer>
-
-        <TimerContainer>
-          <span>{minutesString[0]}</span>
-          <span>{minutesString[1]}</span>
-          <span>:</span>
-          <span>{secondsString[0]}</span>
-          <span>{secondsString[1]}</span>
-        </TimerContainer>
+        <Timer minute={minutesString} second={secondsString} />
 
         {
           !activeCycle ?
