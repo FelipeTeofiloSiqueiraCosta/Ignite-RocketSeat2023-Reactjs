@@ -2,8 +2,9 @@ import { Play } from "phosphor-react";
 import { FormContainer, HomeContainer, TimerContainer } from "./styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
+import {  z } from "zod";
+import {  useEffect, useState } from "react";
+import {  differenceInSeconds } from "date-fns";
 
 const zodSchema = z
   .object({
@@ -21,11 +22,14 @@ interface Cycle{
   id: string;
   task: string;
   duration: number;
+  startDate: Date;
+  
 }
 
 export function Home() {
   const [cycle, setCycle] = useState<Cycle[]>([])
   const [cycleIdActive, setCycleIdActive] = useState<string | undefined>()
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
   const {
     register, // função que registra os inputs,
     handleSubmit, // função que lida com o submit
@@ -39,34 +43,56 @@ export function Home() {
       name: "",
     },
   });
-
+  // console.log(cycle)
   const onSubmit = (fields: FormInputs) => {
 
     const id = String(new Date().getTime())
     const createdCycle: Cycle = {
       id,
       duration: fields.duration,
-      task: fields.name
+      task: fields.name,
+      startDate: new Date()
     }
 
     setCycle(cycles => [...cycles, createdCycle])
+    setAmountSecondsPassed(0)
     setCycleIdActive(id)
     reset();
   };
-  // console.log("renderized");
-  // console.log(formState.errors);
-
+ 
   const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
 
+  useEffect(()=>{
+    let interval: number;
+    if(activeCycle && activeCycle.duration*60>0){
 
-  const totalSeconds = activeCycle ? activeCycle.duration*60: 0;
+      interval = setInterval(()=>{
+        const difference = differenceInSeconds(new Date(), activeCycle.startDate)
+        setAmountSecondsPassed(difference)
+        
+      },1000)
+
+    }
+    return ()=>{
+
+      clearInterval(interval)
+    }
+  },[activeCycle])
+  
+ 
+
+  let totalSeconds = activeCycle ? activeCycle.duration*60: 0;
+
+  totalSeconds -= amountSecondsPassed;
   const minutes = Math.floor(totalSeconds/60);
   const seconds = totalSeconds % 60;
 
   const minutesString = String(minutes).padStart(2, "0");
   const secondsString = String(seconds).padStart(2, "0");
 
-  
+  useEffect(()=>{
+    document.title = `${minutesString}:${secondsString}`
+  })
 
   return (
     <HomeContainer>
