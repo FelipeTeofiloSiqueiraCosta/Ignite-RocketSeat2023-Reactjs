@@ -22,6 +22,7 @@ export function Home() {
     handleSubmit, // função que lida com o submit
     watch,
     formState,
+    reset,
   } = useForm<FormInputs>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
@@ -32,6 +33,7 @@ export function Home() {
 
   const onSubmit = (fields: FormInputs) => {
     console.log(fields);
+    reset();
   };
   console.log("renderized");
   console.log(formState.errors);
