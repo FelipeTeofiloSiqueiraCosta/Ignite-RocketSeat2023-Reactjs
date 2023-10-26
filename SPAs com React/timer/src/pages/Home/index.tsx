@@ -3,6 +3,7 @@ import { FormContainer, HomeContainer, TimerContainer } from "./styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState } from "react";
 
 const zodSchema = z
   .object({
@@ -16,12 +17,20 @@ const zodSchema = z
 
 type FormInputs = z.infer<typeof zodSchema>;
 
+interface Cycle{
+  id: string;
+  task: string;
+  duration: number;
+}
+
 export function Home() {
+  const [cycle, setCycle] = useState<Cycle[]>([])
+  const [cycleIdActive, setCycleIdActive] = useState<string | undefined>()
   const {
     register, // função que registra os inputs,
     handleSubmit, // função que lida com o submit
     watch,
-    formState,
+    // formState,
     reset,
   } = useForm<FormInputs>({
     resolver: zodResolver(zodSchema),
@@ -32,12 +41,23 @@ export function Home() {
   });
 
   const onSubmit = (fields: FormInputs) => {
-    console.log(fields);
+
+    const id = String(new Date().getTime())
+    const createdCycle: Cycle = {
+      id,
+      duration: fields.duration,
+      task: fields.name
+    }
+
+    setCycle(cycles => [...cycles, createdCycle])
+    setCycleIdActive(id)
     reset();
   };
-  console.log("renderized");
-  console.log(formState.errors);
+  // console.log("renderized");
+  // console.log(formState.errors);
 
+  const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
+  console.log(activeCycle);
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
