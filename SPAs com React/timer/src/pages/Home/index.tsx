@@ -57,7 +57,17 @@ export function Home() {
   // console.log(formState.errors);
 
   const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
-  console.log(activeCycle);
+
+
+  const totalSeconds = activeCycle ? activeCycle.duration*60: 0;
+  const minutes = Math.floor(totalSeconds/60);
+  const seconds = totalSeconds % 60;
+
+  const minutesString = String(minutes).padStart(2, "0");
+  const secondsString = String(seconds).padStart(2, "0");
+
+  
+
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -91,11 +101,11 @@ export function Home() {
         </FormContainer>
 
         <TimerContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{minutesString[0]}</span>
+          <span>{minutesString[1]}</span>
           <span>:</span>
-          <span>0</span>
-          <span>0</span>
+          <span>{secondsString[0]}</span>
+          <span>{secondsString[1]}</span>
         </TimerContainer>
 
         <button
