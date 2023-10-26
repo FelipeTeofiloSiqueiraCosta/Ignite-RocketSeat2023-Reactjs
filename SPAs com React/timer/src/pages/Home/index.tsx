@@ -1,10 +1,14 @@
 import { Pause, Play } from "phosphor-react";
-import { FormContainer, FormSubmiteButtonActive, FormSubmiteButtonPause, HomeContainer } from "./styles";
-import { useForm } from "react-hook-form";
+import {
+  FormSubmiteButtonActive,
+  FormSubmiteButtonPause,
+  HomeContainer,
+} from "./styles";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  z } from "zod";
-import {  useEffect, useState } from "react";
-import {  differenceInSeconds } from "date-fns";
+import { z } from "zod";
+import { createContext, useState } from "react";
+
 import { Timer } from "./Timer";
 import { NewCycleForm } from "./NewCycleForm";
 
@@ -18,137 +22,124 @@ const zodSchema = z
   })
   .required();
 
-type FormInputs = z.infer<typeof zodSchema>;
-
-interface Cycle{
+export type FormInputs = z.infer<typeof zodSchema>;
+interface Cycle {
   id: string;
   task: string;
   duration: number;
   startDate: Date;
-  interruptedDate?: Date,
-  finishedDate?: Date,
+  interruptedDate?: Date;
+  finishedDate?: Date;
 }
 
+interface CycleContextData {
+  activeCycle: Cycle | undefined;
+  amountSecondsPassed: number;
+  cycleIdActive: string | undefined;
+  markAsFinished: () => void;
+  setSecondsPassad: (seconds: number) => void;
+}
+
+export const CycleContext = createContext({} as CycleContextData);
+
 export function Home() {
-  const [cycle, setCycle] = useState<Cycle[]>([])
-  const [cycleIdActive, setCycleIdActive] = useState<string | undefined>()
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
-  const {
-    register, // função que registra os inputs,
-    handleSubmit, // função que lida com o submit
-    watch,
-    // formState,
-    reset,
-  } = useForm<FormInputs>({
+  const [cycle, setCycle] = useState<Cycle[]>([]);
+  const [cycleIdActive, setCycleIdActive] = useState<string | undefined>();
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
+
+  const newCycleForm = useForm<FormInputs>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
       duration: 5,
       name: "",
     },
   });
+  const {
+    handleSubmit, // função que lida com o submit
+    watch,
+    // formState,
+    reset,
+  } = newCycleForm;
+
+  function markAsFinished() {
+    setCycle((cycles) =>
+      cycles.map((cycle) => {
+        if (cycle.id === cycleIdActive) {
+          cycle.finishedDate = new Date();
+        }
+        return cycle;
+      })
+    );
+  }
+
+  function setSecondsPassad(value: number) {
+    setAmountSecondsPassed(value);
+  }
 
   const onSubmit = (fields: FormInputs) => {
-
-    const id = String(new Date().getTime())
+    const id = String(new Date().getTime());
     const createdCycle: Cycle = {
       id,
       duration: fields.duration,
       task: fields.name,
-      startDate: new Date()
-    }
+      startDate: new Date(),
+    };
 
-    setCycle(cycles => [...cycles, createdCycle])
-    setAmountSecondsPassed(0)
-    setCycleIdActive(id)
+    setCycle((cycles) => [...cycles, createdCycle]);
+    setAmountSecondsPassed(0);
+    setCycleIdActive(id);
     reset();
   };
 
-  function handleInterruptCycle(){
-    setCycleIdActive(undefined)
-    setCycle(cycles => cycles.map(cycle => {
-      if(cycle.id === cycleIdActive){
-        cycle.interruptedDate = new Date()
-      }
-      return cycle
-    }))
-    setAmountSecondsPassed(0)
-  }
-  const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
-  let totalSeconds = activeCycle ? activeCycle.duration*60: 0;
-
- 
-  useEffect(()=>{
-    let interval: number;
-    if(activeCycle ){
-
-      interval = setInterval(()=>{
-        const difference = differenceInSeconds(new Date(), activeCycle.startDate)
-
-        if(difference >= totalSeconds){
-          setCycleIdActive(undefined)
-          setAmountSecondsPassed(0)
-          setCycle(cycles => cycles.map(cycle => {
-            if(cycle.id === cycleIdActive){
-              cycle.finishedDate = new Date()
-            }
-            return cycle
-          }))
-
-          clearInterval(interval)
-        }else{
-
-          setAmountSecondsPassed(difference)
+  function handleInterruptCycle() {
+    setCycleIdActive(undefined);
+    setCycle((cycles) =>
+      cycles.map((cycle) => {
+        if (cycle.id === cycleIdActive) {
+          cycle.interruptedDate = new Date();
         }
-      },1000)
-
-    }
-    return ()=>{
-
-      clearInterval(interval)
-    }
-  },[activeCycle, totalSeconds, cycleIdActive])
-
-  totalSeconds -= amountSecondsPassed;
-
- 
-  const minutes = Math.floor(totalSeconds/60);
-  const seconds = totalSeconds % 60;
-
-  const minutesString = String(minutes).padStart(2, "0");
-  const secondsString = String(seconds).padStart(2, "0");
-
-  useEffect(()=>{
-    document.title = `${minutesString}:${secondsString}`
-  })
+        return cycle;
+      })
+    );
+    setAmountSecondsPassed(0);
+  }
+  const activeCycle = cycle.find((cycle) => cycle.id === cycleIdActive);
 
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <NewCycleForm/>
-
-        <Timer minute={minutesString} second={secondsString} />
-
-        {
-          !activeCycle ?
-          (
-            <FormSubmiteButtonActive
-          type="submit"
-          disabled={(!watch("name") || !watch("duration"))}
-          title="Enviar"
+        <CycleContext.Provider
+          value={{
+            activeCycle,
+            amountSecondsPassed,
+            cycleIdActive,
+            markAsFinished,
+            setSecondsPassad,
+          }}
         >
-               <Play size={24} /> Começar
-        </FormSubmiteButtonActive>
-          ):
-          (
-            <FormSubmiteButtonPause
+          <FormProvider {...newCycleForm}>
+            <NewCycleForm />
+          </FormProvider>
+          <Timer />
+        </CycleContext.Provider>
+
+        {!activeCycle ? (
+          <FormSubmiteButtonActive
+            type="submit"
+            disabled={!watch("name") || !watch("duration")}
+            title="Enviar"
+          >
+            <Play size={24} /> Começar
+          </FormSubmiteButtonActive>
+        ) : (
+          <FormSubmiteButtonPause
             type="button"
             title="Pausar"
             onClick={handleInterruptCycle}
           >
-               <Pause size={24} /> Interromper
-        </FormSubmiteButtonPause>
-          )
-        }
+            <Pause size={24} /> Interromper
+          </FormSubmiteButtonPause>
+        )}
       </form>
     </HomeContainer>
   );

@@ -1,21 +1,63 @@
-
+import { useContext, useEffect } from "react";
 import { TimerContainer } from "./styles";
+import { differenceInSeconds } from "date-fns";
+import { CycleContext } from "..";
 
-interface TimerProps {
-    minute: string;
-    second: string;
-}
+export function Timer() {
+  const {
+    activeCycle,
+    amountSecondsPassed,
+    cycleIdActive,
+    markAsFinished,
+    setSecondsPassad,
+  } = useContext(CycleContext);
 
-export function Timer({minute,second}: TimerProps) {
-    
+  let totalSeconds = activeCycle ? activeCycle.duration * 60 : 0;
 
-    return (
-        <TimerContainer>
-          <span>{minute[0]}</span>
-          <span>{minute[1]}</span>
-          <span>:</span>
-          <span>{second[0]}</span>
-          <span>{second[1]}</span>
-        </TimerContainer>
-    )
+  useEffect(() => {
+    let interval: number;
+    if (activeCycle) {
+      interval = setInterval(() => {
+        const difference = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate
+        );
+
+        if (difference >= totalSeconds) {
+          //   setCycleIdActive(undefined);
+          setSecondsPassad(0);
+          markAsFinished();
+
+          clearInterval(interval);
+        } else {
+          setSecondsPassad(difference);
+        }
+      }, 1000);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [activeCycle, totalSeconds, cycleIdActive, markAsFinished]);
+
+  totalSeconds -= amountSecondsPassed;
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const minutesString = String(minutes).padStart(2, "0");
+  const secondsString = String(seconds).padStart(2, "0");
+
+  useEffect(() => {
+    document.title = `${minutesString}:${secondsString}`;
+  });
+
+  return (
+    <TimerContainer>
+      <span>{minutesString[0]}</span>
+      <span>{minutesString[1]}</span>
+      <span>:</span>
+      <span>{secondsString[0]}</span>
+      <span>{secondsString[1]}</span>
+    </TimerContainer>
+  );
 }
