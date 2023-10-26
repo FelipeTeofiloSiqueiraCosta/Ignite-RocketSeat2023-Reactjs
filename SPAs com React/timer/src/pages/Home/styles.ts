@@ -12,28 +12,7 @@ export const HomeContainer = styled.div`
     align-items: center;
     justify-content: center;
 
-    button {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      border: none;
-      border-radius: 8px;
-      padding: 17px;
-      background-color: ${({ theme }) => theme["green-500"]};
-      color: ${({ theme }) => theme["gray-100"]};
-      cursor: pointer;
-      transition: background-color 0.2s;
-
-      &:not(:disabled):hover {
-        background-color: ${(props) => props.theme["green-700"]};
-      }
-      &:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-      }
-    }
+    
   }
 `;
 export const FormContainer = styled.div`
@@ -94,5 +73,40 @@ export const TimerContainer = styled.div`
       padding: 2rem 0.5rem !important;
       background-color: transparent !important;
     }
+  }
+`;
+export const BaseFormSubmiteButton = styled.button`
+
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      padding: 17px;
+      
+      color: ${({ theme }) => theme["gray-100"]};
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+`;
+export const FormSubmiteButtonActive = styled(BaseFormSubmiteButton)`
+  background-color: ${({ theme }) => theme["green-500"]}; 
+  &:not(:disabled):hover {
+        background-color: ${(props) => props.theme["green-700"]};
+  }
+`;
+
+export const FormSubmiteButtonPause = styled(BaseFormSubmiteButton)`
+  background-color: ${({ theme }) => theme["red-500"]};
+  &:not(:disabled):hover {
+        background-color: ${(props) => props.theme["red-700"]};
   }
 `;

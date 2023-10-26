@@ -1,5 +1,5 @@
-import { Play } from "phosphor-react";
-import { FormContainer, HomeContainer, TimerContainer } from "./styles";
+import { Pause, Play } from "phosphor-react";
+import { FormContainer, FormSubmiteButtonActive, FormSubmiteButtonPause, HomeContainer, TimerContainer } from "./styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {  z } from "zod";
@@ -23,7 +23,8 @@ interface Cycle{
   task: string;
   duration: number;
   startDate: Date;
-  
+  interruptedDate?: Date,
+  finishedDate?: Date,
 }
 
 export function Home() {
@@ -43,13 +44,13 @@ export function Home() {
       name: "",
     },
   });
-  // console.log(cycle)
+
   const onSubmit = (fields: FormInputs) => {
 
     const id = String(new Date().getTime())
     const createdCycle: Cycle = {
       id,
-      duration: fields.duration,
+      duration: .10,
       task: fields.name,
       startDate: new Date()
     }
@@ -59,17 +60,43 @@ export function Home() {
     setCycleIdActive(id)
     reset();
   };
- 
-  const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
 
+  function handleInterruptCycle(){
+    setCycleIdActive(undefined)
+    setCycle(cycles => cycles.map(cycle => {
+      if(cycle.id === cycleIdActive){
+        cycle.interruptedDate = new Date()
+      }
+      return cycle
+    }))
+    setAmountSecondsPassed(0)
+  }
+  const activeCycle = cycle.find(cycle => cycle.id === cycleIdActive)
+  let totalSeconds = activeCycle ? activeCycle.duration*60: 0;
+
+ 
   useEffect(()=>{
     let interval: number;
-    if(activeCycle && activeCycle.duration*60>0){
+    if(activeCycle ){
 
       interval = setInterval(()=>{
         const difference = differenceInSeconds(new Date(), activeCycle.startDate)
-        setAmountSecondsPassed(difference)
-        
+
+        if(difference >= totalSeconds){
+          setCycleIdActive(undefined)
+          setAmountSecondsPassed(0)
+          setCycle(cycles => cycles.map(cycle => {
+            if(cycle.id === cycleIdActive){
+              cycle.finishedDate = new Date()
+            }
+            return cycle
+          }))
+
+          clearInterval(interval)
+        }else{
+
+          setAmountSecondsPassed(difference)
+        }
       },1000)
 
     }
@@ -77,13 +104,11 @@ export function Home() {
 
       clearInterval(interval)
     }
-  },[activeCycle])
-  
- 
-
-  let totalSeconds = activeCycle ? activeCycle.duration*60: 0;
+  },[activeCycle, totalSeconds, cycleIdActive])
 
   totalSeconds -= amountSecondsPassed;
+
+ 
   const minutes = Math.floor(totalSeconds/60);
   const seconds = totalSeconds % 60;
 
@@ -104,6 +129,7 @@ export function Home() {
             id="project-name"
             placeholder="Dê um nome para seu projeto"
             list="tasks-sugestions"
+            disabled={!!activeCycle}
             {...register("name")}
           />
 
@@ -121,6 +147,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            disabled={!!activeCycle}
             {...register("duration", { valueAsNumber: true })}
           />
           <span>minutos</span>
@@ -134,14 +161,27 @@ export function Home() {
           <span>{secondsString[1]}</span>
         </TimerContainer>
 
-        <button
+        {
+          !activeCycle ?
+          (
+            <FormSubmiteButtonActive
           type="submit"
-          disabled={!watch("name") || !watch("duration")}
+          disabled={(!watch("name") || !watch("duration"))}
           title="Enviar"
         >
-          <Play size={24} />
-          Começar
-        </button>
+               <Play size={24} /> Começar
+        </FormSubmiteButtonActive>
+          ):
+          (
+            <FormSubmiteButtonPause
+            type="button"
+            title="Pausar"
+            onClick={handleInterruptCycle}
+          >
+               <Pause size={24} /> Interromper
+        </FormSubmiteButtonPause>
+          )
+        }
       </form>
     </HomeContainer>
   );
