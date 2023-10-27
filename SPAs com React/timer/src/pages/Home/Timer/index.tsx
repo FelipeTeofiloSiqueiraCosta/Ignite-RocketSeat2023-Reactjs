@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
 import { TimerContainer } from "./styles";
 import { differenceInSeconds } from "date-fns";
-import { CycleContext } from "..";
+import { useCycle } from "../../../contexts/CyclesContext";
+import { useEffect } from "react";
 
 export function Timer() {
   const {
@@ -10,8 +10,7 @@ export function Timer() {
     cycleIdActive,
     markAsFinished,
     setSecondsPassad,
-  } = useContext(CycleContext);
-
+  } = useCycle();
   let totalSeconds = activeCycle ? activeCycle.duration * 60 : 0;
 
   useEffect(() => {
