@@ -45,6 +45,25 @@ If you are developing a production application, we recommend updating the config
 - yup https://www.npmjs.com/package/yup
 - joi https://joi.dev/api/?v=17.9.1
 
+## Reducers
+
+- É um hook do react parecido com o useState
+- Vamos utilizar os reducers quando a forma de trabalhar com os estados começarem a ficar muito verbosa ou complexa
+  - Ex:
+    ```js
+    setCycle((cycles) =>
+      cycles.map((cycle) => {
+        if (cycle.id === cycleIdActive) {
+          cycle.interruptedDate = new Date();
+        }
+        return cycle;
+      })
+    );
+    ```
+  - Nesse exemplo a alteração do estado de cycle depende do estado anterior dele e temos que fazer um mapeamento nele buscando o cycle que esta ativo pra poder alterar a data, percebe que começou a ficar complexo?
+  - Nesses casos utilizamos o useReducer
+  -
+
 ## Interessante saber
 
 - Imputs do tipio number podemos passar um propriedade chamada _step_

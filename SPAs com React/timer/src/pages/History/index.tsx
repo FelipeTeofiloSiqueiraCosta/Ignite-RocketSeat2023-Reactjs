@@ -7,7 +7,6 @@ export function History() {
 
   return (
     <HistoryContainer>
-      <p>{JSON.stringify(cycles, null, 2)}</p>
       <h1>Meu histórico</h1>
       <HistoryList>
         <table>
