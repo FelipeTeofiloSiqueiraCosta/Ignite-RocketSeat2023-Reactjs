@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useReducer, useState } from "react";
-import { CyclesState, cycleReducer } from "../reducers/cycles/reducer";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import { cycleReducer } from "../reducers/cycles/reducer";
 import {
   addNewCycleAction,
   interruptCycleAction,
@@ -38,10 +44,24 @@ interface CycleFormInputs {
 const CycleContext = createContext({} as CycleContextData);
 
 export function CycleProvider({ children }: CycleProviderProps) {
-  const [cycle, dispatch] = useReducer(cycleReducer, {
-    cycleIdActive: null,
-    cycles: [],
-  } as CyclesState);
+  const [cycle, dispatch] = useReducer(
+    cycleReducer,
+    {
+      cycleIdActive: null,
+      cycles: [],
+    },
+    (initialState) => {
+      const storage = localStorage.getItem("@timer:cycles");
+      if (storage) {
+        return JSON.parse(storage);
+      }
+      return initialState;
+    }
+  );
+
+  useEffect(() => {
+    localStorage.setItem("@timer:cycles", JSON.stringify(cycle));
+  }, [cycle]);
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
