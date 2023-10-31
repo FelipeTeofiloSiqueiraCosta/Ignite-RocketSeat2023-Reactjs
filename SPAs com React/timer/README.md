@@ -71,3 +71,19 @@ If you are developing a production application, we recommend updating the config
 - **Datalist**
   - lista de sugestoes para um input
   -
+- Immerjs
+  - Ajuda agente a trabalhar com imutabilidade
+  - Entao quando temos que adicionar um valor em um array que esta em um estado, normalmente sem o immer fariamos:
+    ```js
+    setState([...state, "newValue"]); // como o react trabalha muito com o conceito de imutabilidade
+    // toda vez que formos alterar o estado, temos que passar o novo valor, nesse caso, o novo array contendo o novo valor
+    ```
+  - Utilizando o immer, ele permite que você trabalhe com os dados de uma forma mais fácil, parecendo que não utilizamos imutabilidade
+  - ex:
+  ```js
+  produce(state, (draft) => {
+    draft.push("newValue");
+  });
+  // o primeiro parametro do product é o estado que queremos alterar, o segundo é uma funcao que recebe um parámetro 'draft' (rascunho), que tem exatamente a mesma tipagem do nosso estado, e nos permite trabalha de uma forma mais fácil com os dados.
+  // immer deixa seu codigo mais facil de entender
+  ```
