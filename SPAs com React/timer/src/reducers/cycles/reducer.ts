@@ -1,10 +1,5 @@
-import { Cycle } from "../contexts/CyclesContext";
-
-export enum CycleActionTypes {
-  ADD_CYCLE = "ADD_CYCLE",
-  MARK_AS_FINISHED = "MARK_AS_FINISHED",
-  INTERRUPT_CYCLE = "INTERRUPT_CYCLE",
-}
+import { Cycle } from "../../contexts/CyclesContext";
+import { CycleActionTypes } from "./actions";
 
 interface ActionType {
   type: CycleActionTypes;

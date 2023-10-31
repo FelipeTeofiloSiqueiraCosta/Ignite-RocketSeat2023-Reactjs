@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useReducer, useState } from "react";
+import { CyclesState, cycleReducer } from "../reducers/cycles/reducer";
 import {
-  CycleActionTypes,
-  CyclesState,
-  cycleReducer,
-} from "../reducers/cycles";
+  addNewCycleAction,
+  interruptCycleAction,
+  markAsFinishedAction,
+} from "../reducers/cycles/actions";
 
 export interface Cycle {
   id: string;
@@ -53,16 +54,13 @@ export function CycleProvider({ children }: CycleProviderProps) {
       startDate: new Date(),
     };
 
-    dispatch({ type: CycleActionTypes.ADD_CYCLE, payload: createdCycle });
+    dispatch(addNewCycleAction(createdCycle));
 
     setAmountSecondsPassed(0);
   };
 
   function markAsFinished() {
-    dispatch({
-      type: CycleActionTypes.MARK_AS_FINISHED,
-      payload: { cycleIdActive: cycle.cycleIdActive },
-    });
+    dispatch(markAsFinishedAction({ cycleIdActive: cycle.cycleIdActive }));
   }
 
   function setSecondsPassad(value: number) {
@@ -70,10 +68,7 @@ export function CycleProvider({ children }: CycleProviderProps) {
   }
 
   function handleInterruptCycle() {
-    dispatch({
-      type: CycleActionTypes.INTERRUPT_CYCLE,
-      payload: { cycleIdActive: cycle.cycleIdActive },
-    });
+    dispatch(interruptCycleAction({ cycleIdActive: cycle.cycleIdActive }));
 
     setAmountSecondsPassed(0);
   }
