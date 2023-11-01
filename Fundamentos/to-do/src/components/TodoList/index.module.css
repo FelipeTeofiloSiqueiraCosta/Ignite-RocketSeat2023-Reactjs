@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 46rem;
+  width: 100%;
+  align-items: space-between;
+}
+
+.list li {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  background-color: var(--gray-500);
+  border-radius: 8px;
+  border: 1px solid var(--gray-400);
+}
+.list li input {
+  position: relative;
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid var(--blue);
+  background-color: transparent;
+  appearance: none;
+}
+.list li input:checked {
+  background-color: var(--purple-dark);
+  border: 1px solid transparent;
+}
+.list li p {
+  flex: 1;
+  font-size: 0.875rem;
+}
+.list li p.done {
+  text-decoration: line-through;
+  color: var(--gray-300);
+}
+
+.list li svg {
+  color: var(--gray-300);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+.list li svg:hover {
+  background-color: var(--gray-400);
+  color: var(--danger);
+}
