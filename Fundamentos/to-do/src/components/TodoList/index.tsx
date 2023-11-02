@@ -1,33 +1,61 @@
-import { Trash } from "@phosphor-icons/react";
+import { ClipboardText, Trash } from "@phosphor-icons/react";
 import styles from "./index.module.css";
+import { Todo } from "../../App";
 
-// interface Todo {
-//   description: string;
-//   done: boolean;
-// }
+interface ListTodoProps {
+  todos: Todo[];
+  toggleStatusTodo: (index: number) => void;
+  deleteTodo: (index: number) => void;
+}
 
-// interface ListTodoProps {
-//   todos: Todo[];
-// }
+export function ListTodo({
+  todos,
+  toggleStatusTodo,
+  deleteTodo,
+}: ListTodoProps) {
+  const todoLength = todos.length;
 
-export function ListTodo() {
+  const amountDoneTodos = todos.filter((todo) => todo.done).length;
+
   return (
     <div className={styles.container}>
+      <section>
+        <div>
+          Tarefas criadas <span>{todoLength}</span>
+        </div>
+        <div>
+          Concluídas{" "}
+          <span>
+            {amountDoneTodos} de {todoLength}
+          </span>
+        </div>
+      </section>
       <ul className={styles.list}>
-        {/* {todos.map((todo, index) => {
-          return ( */}
-        <li key={""}>
-          <input type="checkbox" value="checked" />
-          <p className={styles.done}>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quidem ea
-            impedit facere error! Quo, possimus necessitatibus officiis
-            voluptates harum, facilis omnis accusantium blanditiis veritatis ea
-            est quam autem voluptate libero!
-          </p>
-          <Trash size={29} />
-        </li>
-        {/* );
-        })} */}
+        {todos.length > 0 ? (
+          todos.map((todo, index) => {
+            return (
+              <li key={todo.id}>
+                <input
+                  type="checkbox"
+                  defaultChecked={todo.done}
+                  onClick={() => toggleStatusTodo(index)}
+                />
+                <p className={todo.done ? styles.done : ""}>
+                  {todo.description}
+                </p>
+                <Trash size={29} onClick={() => deleteTodo(index)} />
+              </li>
+            );
+          })
+        ) : (
+          <article>
+            <ClipboardText size={56} />
+            <div>
+              <b>Vocé ainda não tem tarefas cadastradas</b>
+              <p>Crie tarefas e organize sus itens de afazeres</p>
+            </div>
+          </article>
+        )}
       </ul>
     </div>
   );
