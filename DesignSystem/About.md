@@ -34,3 +34,11 @@
   - npx tsc --init
   - ### Build do pacote com TSup
     - npm i tsup -D
+      - Serve pra gente fazer a conversão do nosso codigo para arquivos .js, que poderão ser utilizados em outros projetos
+      - O tsup ele ajuda agente a converter nossos arquivos em um tipo de ecmascript modules (para as aplicacoes que usam a sintaxe de import e export), e o tsup também permite a conversao do podico em aplicações mais antigas, que utilizam sintaze de require. Utilizando apenas o tsc nao conseguiriamos ter essa flexibilidade.
+      - Uma coisa legal tbm é que o tsup permite que consigamos criar arquivos de definicao de tipagens
+    - package.json script
+      - "build": "tsup src/index.ts --format esm,cjs --dts"
+        - quero que o tsup faça a exportação em arquivos esm (ecma script modules (import,export)) e cjs( commomjs (require))
+        - dts = exporte em arquivos de definicao de tipagens tbm
+    -
