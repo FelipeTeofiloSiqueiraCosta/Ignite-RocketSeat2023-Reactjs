@@ -6,9 +6,12 @@ export const GlobalStyles = createGlobalStyle`
         padding: 0;
         box-sizing: border-box;
     }
-    :focus{
+    /* :focus{
         outline: none;
         box-shadow: 0 0 0 2px ${(props) => props.theme["yellow-light"]};
+    } */
+    html{
+        width: 100%;
     }
     body{
         font-family: 'Roboto', sans-serif;
@@ -25,6 +28,9 @@ export const GlobalStyles = createGlobalStyle`
     }
     button{
         cursor: pointer;
+    }
+    ul{
+        list-style: none;
     }
 
 
